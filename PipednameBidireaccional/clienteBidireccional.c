@@ -1,18 +1,9 @@
-/**************
-*                                          *
-* Autor: JDavid Roa Neisa         *
-* Materia: Sistemas Operativos             *
-* Fecha: 17-10-24                          *
-* Tema: Piped Named Bidireccional          *
-* CLIENTE                                  *
-*                                          *
-***************/
-
-/*
-Descripcion:
-      Este programa crea un FIFO de nombre /tmp/fifo_twoway y envia un mensaje.
-      para que le respondan con el mismo mensaje de vuelta, pero al reves. Siendo esta una conexion bidireccional.
-*/
+/********
+Autor: David Roa Neisa         
+Materia: Sistemas Operativos             
+Fecha: 17-10-24                          
+Tema: Piped Named Bidireccional                                            *                                        
+**************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,23 +28,20 @@ int main() {
 
     // Abre el archivo FIFO para lectura y escritura o lo crea si no existe
     fd = open(FIFO_FILE, O_CREAT | O_RDWR, 0640);
-    if (fd == -1) {  // Verifica si hubo un error al abrir el archivo
-        perror("open");  // Imprime el error
-        exit(EXIT_FAILURE); 
-    }
 
     // Copia la cadena "end" en la variable end_str
     strcpy(end_str, "end");
 
-    // Bucle infinito para enviar mensajes
+    // Bucle infinito
     while (1) {
-        printf("Enter string: ");  // Solicita al usuario que ingrese una cadena
-        fgets(readbuf, sizeof(readbuf), stdin);  // Lee la cadena ingresada por el usuario
-        stringlen = strlen(readbuf);  // Calcula la longitud de la cadena
-        readbuf[stringlen - 1] = '\0';  // Reemplaza el carácter de nueva línea con el carácter nulo
-        end_process = strcmp(readbuf, end_str);  // Compara la cadena leída con "end"
+      // Solicita al usuario que ingrese una cadena
+        printf("Enter string: ");  
+        fgets(readbuf, sizeof(readbuf), stdin);  
+        stringlen = strlen(readbuf);  
+        readbuf[stringlen - 1] = '\0';  
+        end_process = strcmp(readbuf, end_str);  
 
-        if (end_process != 0) {  // Si la cadena no es "end"
+        if (end_process != 0) {  
             // Escribe la cadena en el archivo FIFO
             write(fd, readbuf, strlen(readbuf));
             printf("Sent string: \"%s\" and string length is %d\n", readbuf, (int)strlen(readbuf));
@@ -61,10 +49,11 @@ int main() {
             // Escribe la cadena "end" en el archivo FIFO y termina el bucle
             write(fd, readbuf, strlen(readbuf));
             printf("Sent string: \"%s\" and string length is %d\n", readbuf, (int)strlen(readbuf));
-            close(fd);  // Cierra el descriptor de archivo
-            break;  // Termina el bucle
+            close(fd); 
+            //acaba con el bucle
+            break; 
         }
     }
 
-    return 0;  // Retorna 0 indicando que el programa terminó correctamente
+    return 0; 
 }
