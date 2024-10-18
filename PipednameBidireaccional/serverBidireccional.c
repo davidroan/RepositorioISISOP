@@ -1,20 +1,10 @@
 /**************
-*                                          *
-* Autor: Juan Diego Muñoz Angulo           *
-* Materia: Sistemas Operativos             *
-* Fecha: 17-10-24                          *
-* Tema: Piped Named Bidireccional          *
-* SERVER                                   *
-*                                          *
+ Autor: David Roa Neisa
+ Materia: Sistemas Operativos 
+ Fecha: 17-10-24                        
+ Tema: Piped Named Bidireccional          
+ SERVER                                                                             *
 ***************/
-
-/*
-Descripcion:
-    Este programa crea un FIFO de nombre /tmp/fifo_twoway y espera a que el cliente envie un mensaje
-    para responderle con el mismo mensaje de vuelta, pero al reves. Siendo esta una conexion bidireccional.
-
-
-*/
 
 
 #include <stdio.h>
@@ -31,10 +21,11 @@ Descripcion:
 void reverse_string(char *str);
 
 int main() {
-    int fd;             // Descriptor de archivo
-    char readbuf[80];   // Buffer para leer datos del FIFO
-    char end[10];       // Cadena para comparar el fin del proceso
-    int to_end;         // Variable para determinar el fin del proceso
+    //creacion de varibles
+    int fd;             
+    char readbuf[80];  
+    char end[10];      
+    int to_end;        
     int read_bytes;
 
    
@@ -42,60 +33,60 @@ int main() {
     if (access(FIFO_FILE, F_OK) == -1) {
         // Crear el archivo FIFO si no existe
         if (mkfifo(FIFO_FILE, 0640) == -1) {
-            perror("mkfifo");  // Imprimir error si mkfifo falla
+            perror("mkfifo");  
             exit(EXIT_FAILURE); 
         }
     }
 
-    strcpy(end, "end");  // Copiar la cadena "end" a la variable end
-    fd = open(FIFO_FILE, O_RDWR);  // Abrir el FIFO para lectura y escritura
-    if (fd == -1) {
-        perror("open");  // Imprimir error si open falla
-        exit(EXIT_FAILURE);  // Salir del programa con error
-    }
+    strcpy(end, "end"); 
+    fd = open(FIFO_FILE, O_RDWR);  // Abrir el FIFO para lectura y escritur
 
     while (1) {
         // Leer datos del FIFO
         read_bytes = read(fd, readbuf, sizeof(readbuf));
+        // Cerrar el descriptor de archivo
         if (read_bytes == -1) {
-            perror("read");  // Imprimir error si read falla
-            close(fd);  // Cerrar el descriptor de archivo
-            exit(EXIT_FAILURE);  // Salir del programa con error
+            perror("read");  
+            close(fd);  
+            exit(EXIT_FAILURE); 
         }
         readbuf[read_bytes] = '\0';  // Añadir terminador nulo a la cadena leída
-        printf("FIFOSERVER: Received string: \"%s\" and length is %d\n", readbuf, (int)strlen(readbuf));  // Imprimir la cadena recibida y su longitud
-        to_end = strcmp(readbuf, end);  // Comparar la cadena leída con "end"
+        printf("FIFOSERVER: Received string: \"%s\" and length is %d\n", readbuf, (int)strlen(readbuf));  // Imprimir
+        to_end = strcmp(readbuf, end);  // Comparar la cadena
 
         if (to_end == 0) {
             close(fd);  // Cerrar el descriptor de archivo
             break;  // Salir del bucle
         }
         reverse_string(readbuf);  // Invertir la cadena leída
-        printf("FIFOSERVER: Sending Reversed String: \"%s\" and length is %d\n", readbuf, (int)strlen(readbuf));  // Imprimir la cadena invertida y su longitud
+        printf("FIFOSERVER: Sending Reversed String: \"%s\" and length is %d\n", readbuf, (int)strlen(readbuf));  // Imprimir 
         if (write(fd, readbuf, strlen(readbuf)) == -1) {
-            perror("write");  // Imprimir error si write falla
-            close(fd);  // Cerrar el descriptor de archivo
-            exit(EXIT_FAILURE);  // Salir 
+            perror("write");  
+            close(fd);
+            exit(EXIT_FAILURE);  
         }
-        
-        //Esto es para asegurarse de que el otro proceso lea bien todo
-        sleep(2);  // Dormir por 2 segundos
+        sleep(2);
     }
-    return 0;  // Retornar 0 indicando que el programa terminó correctamente
+    return 0; 
 }
 
-// Función que invierte una cadena de caracteres
-// Recibe: un puntero a una cadena de caracteres
-// Retorno: No tiene
+/*
+Nombre:reverse_string
+Entrada: revibe un puntero a una cadena de caracteres
+Retorno: No devulve ningun dato
+funcion:invierte una cadena de caracteres recibida por apuntador
+*/
 void reverse_string(char *str) {
+    //creacion de variables
     int last, limit, first;
     char temp;
-    last = strlen(str) - 1;  // Índice del último carácter de la cadena
-    limit = last/2;  // Límite para la inversión
-    first = 0;  // Índice del primer carácter de la cadena
+    last = strlen(str) - 1; 
+    limit = last/2; 
+    first = 0;  
 
+    //Ciclo para cambiar el orden de la cadena
     while (first <= limit) {
-        temp = str[first];  // Almacenar el carácter actual en una variable temporal
+        temp = str[first];  
         str[first] = str[last];  // Intercambiar el carácter actual con el carácter del final
         str[last] = temp;  // Colocar el carácter temporal en la posición final
         first++;  // Incrementar el índice del primer carácter
